@@ -7,21 +7,25 @@
 #include <math.h>  
 //------------------------------------------------------------------------
 #include "app\app.h"
+#include "app\main.h"
+#include "EnemySpawner.h"
+#include "Player.h"
 //------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
 // Eample data....
 //------------------------------------------------------------------------
-CSimpleSprite *playerSprite;
-CSimpleSprite *enemySprite;
+Player *playerObject;
+EnemySpawner *enemySpawner;
+float x, y;
 
-enum
-{
-	ANIM_FORWARDS,
-	ANIM_BACKWARDS,
-	ANIM_LEFT,
-	ANIM_RIGHT,
-};
+//enum
+//{
+//	ANIM_FORWARDS,
+//	ANIM_BACKWARDS,
+//	ANIM_LEFT,
+//	ANIM_RIGHT,
+//};
 //------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
@@ -42,18 +46,17 @@ void Init()
 	//testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
 	//testSprite->SetScale(2.0f);
 
-	playerSprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 12);
-	playerSprite->SetPosition(200.0f, 200.0f);
-	playerSprite->SetFrame(2);
-	playerSprite->SetScale(1.0f);
-	playerSprite->SetAngle(4.7f);
 
-	enemySprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 15);
-	enemySprite->SetPosition(1050.0f, 300.0f);	//outside right frame
-	enemySprite->SetFrame(2);
-	enemySprite->SetScale(0.5f);
-	enemySprite->SetColor(1.0f, 0.5f, 0.0f);
-	enemySprite->SetAngle(1.6f);
+
+	//enemySprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 15);
+	//enemySprite->SetPosition(1050.0f, 300.0f);	//outside right frame
+	//enemySprite->SetFrame(2);
+	//enemySprite->SetScale(0.5f);
+	//enemySprite->SetColor(1.0f, 0.5f, 0.0f);
+	//enemySprite->SetAngle(1.6f);
+
+	enemySpawner->RandomSpawner();
+	playerObject->CreatePlayerSprite();
 	//------------------------------------------------------------------------
 }
 
@@ -63,19 +66,12 @@ void Init()
 //------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	playerSprite->Update(deltaTime);
-	//enemySprite->Update(deltaTime);
-	
-	//gravity
-	float x, y;
-	playerSprite->GetPosition(x, y);
-	y -= 1.0f;
-	playerSprite->SetPosition(x, y);
+	//enemySpawner->RandomSpawner();
+	playerObject->Update(deltaTime);
+	enemySpawner->Update(deltaTime);
 
-	//enemy plane movement
-	enemySprite->GetPosition(x, y);
-	x -= 2.0f;
-	enemySprite->SetPosition(x, y);
+	//enemy movement
+	enemySpawner->EnemyMovement();
 
 	//if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	//{
@@ -93,14 +89,7 @@ void Update(float deltaTime)
 	//	x -= 1.0f;
 	//	playerSprite->SetPosition(x, y);
 	//}
-	if (App::GetController().GetLeftThumbStickY() > 0.5f)
-	{
-		playerSprite->SetAnimation(ANIM_FORWARDS);
-		float x, y;
-		playerSprite->GetPosition(x, y);
-		y += 3.0f;
-		playerSprite->SetPosition(x, y);
-	}
+
 	//if (App::GetController().GetLeftThumbStickY() < -0.5f)
 	//{
 	//	playerSprite->SetAnimation(ANIM_BACKWARDS);
@@ -152,6 +141,7 @@ void Render()
 	//------------------------------------------------------------------------
 	// Example Line Drawing.
 	//------------------------------------------------------------------------
+	App::DrawLine(0.0f, 50.0f, (float) WINDOW_WIDTH, 50.0f);
 	//static float a = 0.0f;
 	//float r = 1.0f;
 	//float g = 1.0f;
@@ -171,14 +161,15 @@ void Render()
 
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
-	playerSprite->Draw();
-	enemySprite->Draw();
+	
+	playerObject->Render();
+	enemySpawner->Render();
 	//------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
-	App::Print(100, 100, "Sample Text");
+	//App::Print(100, 100, "Sample Text");
 
 }
 //------------------------------------------------------------------------
@@ -189,7 +180,7 @@ void Shutdown()
 {	
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
-	delete playerSprite;
-	delete enemySprite;
+	playerObject->PlayerDestructor();
+	enemySpawner->EnemyDestructor();
 	//------------------------------------------------------------------------
 }
