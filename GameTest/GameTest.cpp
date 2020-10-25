@@ -5,6 +5,9 @@
 //------------------------------------------------------------------------
 #include <windows.h> 
 #include <math.h>  
+#include <thread>
+#include <functional>
+#include <chrono>
 //------------------------------------------------------------------------
 #include "app\app.h"
 #include "app\main.h"
@@ -19,6 +22,7 @@ Player *playerObject;
 EnemySpawner *enemySpawner;
 float x, y;
 
+
 //enum
 //{
 //	ANIM_FORWARDS,
@@ -30,12 +34,25 @@ float x, y;
 
 //------------------------------------------------------------------------
 // Called before first update. Do any initial setup here.
+void timer_start(unsigned int interval)
+{
+	std::thread([interval]() {
+		while (true)
+		{
+			enemySpawner->RandomSpawner();
+			std::this_thread::sleep_for(std::chrono::milliseconds(interval));
+		}
+		}).detach();
+}
 //------------------------------------------------------------------------
 void Init()
 {
 	//------------------------------------------------------------------------
 	// Example Sprite Code....
 	
+	playerObject->CreatePlayerSprite();
+	//std::function<void(void)> callEnemySpawner = enemySpawner->RandomSpawner();
+	timer_start(5000);
 
 	//testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
 	//testSprite->SetPosition(400.0f, 400.0f);
@@ -54,9 +71,6 @@ void Init()
 	//enemySprite->SetScale(0.5f);
 	//enemySprite->SetColor(1.0f, 0.5f, 0.0f);
 	//enemySprite->SetAngle(1.6f);
-
-	enemySpawner->RandomSpawner();
-	playerObject->CreatePlayerSprite();
 	//------------------------------------------------------------------------
 }
 
@@ -72,6 +86,14 @@ void Update(float deltaTime)
 
 	//enemy movement
 	enemySpawner->EnemyMovement();
+
+	//------------------------------------------------------------------------
+	// Sample Sound.
+	//------------------------------------------------------------------------
+	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
+	{
+		App::PlaySound(".\\TestData\\Test.wav");
+	}
 
 	//if (App::GetController().GetLeftThumbStickX() > 0.5f)
 	//{
@@ -122,13 +144,6 @@ void Update(float deltaTime)
 	//{
 	//	playerSprite->SetVertex(0, playerSprite->GetVertex(0) + 5.0f);
 	//}
-	//------------------------------------------------------------------------
-	// Sample Sound.
-	//------------------------------------------------------------------------
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
-	{
-		App::PlaySound(".\\TestData\\Test.wav");
-	}
 }
 
 //------------------------------------------------------------------------
@@ -169,7 +184,7 @@ void Render()
 	//------------------------------------------------------------------------
 	// Example Text.
 	//------------------------------------------------------------------------
-	//App::Print(100, 100, "Sample Text");
+	App::Print(200, 25, "Score: ");
 
 }
 //------------------------------------------------------------------------

@@ -1,24 +1,12 @@
 #include "stdafx.h"
 #include "stdlib.h"
-#include "windows.h"
-//#include <sys/ioctl.h> //ioctl() and TIOCGWINSZ
-//#include <unistd.h> // for STDOUT_FILENO
-#include "EnemySpawner.h"
-
-#include <windows.h> 
 #include <math.h>
 
+#include "EnemySpawner.h"
 #include "app\main.h"
 #include "app\app.h"
 
 CSimpleSprite *enemySprite;
-
-//struct winsize size;
-//ioctl(STDOUT_FILENO, TIOCGWINSZ, &size);
-
-HANDLE hConsole;
-CONSOLE_SCREEN_BUFFER_INFO consoleInfo = {};
-SMALL_RECT srctWindow;
 
 float initialPosX = (float) (WINDOW_WIDTH); //1050.0f;
 float initialPosY = (float) (WINDOW_HEIGHT / 2); //300.0f;
@@ -35,25 +23,22 @@ EnemySpawner &EnemySpawner::GetInstance()
 	return 	theEnemySpawnerClass;
 }
 
-void EnemySpawner::GetConsoleWindowInfo()
-{
-	GetConsoleScreenBufferInfo(hConsole, &consoleInfo);
-	srctWindow = consoleInfo.srWindow;
-}
-
 void EnemySpawner::RandomSpawner()
 {
 	//GetConsoleWindowInfo();
 
-	//float randPosY = (float) (rand() % 730 + 15);
+	CSimpleSprite* newEnemySprite;
 
-	enemySprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 15);
+	float randPosY = (float) (rand() % 730 + 15);
 
-	enemySprite->SetPosition(initialPosX + enemySprite->GetHeight(), initialPosY); //(1000.0f, 750.0f) right top  (1000.0f, 10.0f) right bottom 
-	enemySprite->SetFrame(0);
-	enemySprite->SetScale(scale);
-	enemySprite->SetAngle(angle);
+	newEnemySprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 15);
 
+	newEnemySprite->SetPosition(initialPosX + newEnemySprite->GetHeight(), randPosY); //(1000.0f, 750.0f) right top  (1000.0f, 10.0f) right bottom 
+	newEnemySprite->SetFrame(0);
+	newEnemySprite->SetScale(scale);
+	newEnemySprite->SetAngle(angle);
+
+	enemySprite = newEnemySprite;
 	//return enemySprite;
 }
 
