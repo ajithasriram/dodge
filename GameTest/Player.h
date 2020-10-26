@@ -1,6 +1,6 @@
 #pragma once
 class Player
-{
+{	
 public:
 	static Player& Player::GetInstance();
 
@@ -8,4 +8,5 @@ public:
 	void Update(float deltaTime);
 	void Render();
 	void PlayerDestructor();
+	void GetPosition(float &x, float &y);
 };

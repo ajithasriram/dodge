@@ -25,6 +25,8 @@
     </ClCompile>
     <ClCompile Include="EnemySpawner.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="ScoreController.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\app.h">
@@ -56,6 +58,8 @@
     </ClInclude>
     <ClInclude Include="EnemySpawner.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="ScoreController.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

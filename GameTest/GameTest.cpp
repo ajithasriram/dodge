@@ -13,189 +13,72 @@
 #include "app\main.h"
 #include "EnemySpawner.h"
 #include "Player.h"
+#include "Enemy.h"
+#include "ScoreController.h"
 //------------------------------------------------------------------------
 
-//------------------------------------------------------------------------
-// Eample data....
-//------------------------------------------------------------------------
-Player *playerObject;
-EnemySpawner *enemySpawner;
+Player* playerObject;
+Enemy* enemyObject1;
+ScoreController scorer;
 float x, y;
 
-
-//enum
-//{
-//	ANIM_FORWARDS,
-//	ANIM_BACKWARDS,
-//	ANIM_LEFT,
-//	ANIM_RIGHT,
-//};
-//------------------------------------------------------------------------
-
-//------------------------------------------------------------------------
-// Called before first update. Do any initial setup here.
-void timer_start(unsigned int interval)
-{
-	std::thread([interval]() {
-		while (true)
-		{
-			enemySpawner->RandomSpawner();
-			std::this_thread::sleep_for(std::chrono::milliseconds(interval));
-		}
-		}).detach();
-}
-//------------------------------------------------------------------------
 void Init()
 {
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	
 	playerObject->CreatePlayerSprite();
-	//std::function<void(void)> callEnemySpawner = enemySpawner->RandomSpawner();
-	timer_start(5000);
-
-	//testSprite = App::CreateSprite(".\\TestData\\Test.bmp", 8, 4);
-	//testSprite->SetPosition(400.0f, 400.0f);
-	//float speed = 1.0f / 15.0f;
-	//testSprite->CreateAnimation(ANIM_BACKWARDS, speed, { 0,1,2,3,4,5,6,7 });
-	//testSprite->CreateAnimation(ANIM_LEFT, speed, { 8,9,10,11,12,13,14,15 });
-	//testSprite->CreateAnimation(ANIM_RIGHT, speed, { 16,17,18,19,20,21,22,23 });
-	//testSprite->CreateAnimation(ANIM_FORWARDS, speed, { 24,25,26,27,28,29,30,31 });
-	//testSprite->SetScale(2.0f);
-
-
-
-	//enemySprite = App::CreateSprite(".\\TestData\\Ships.bmp", 2, 15);
-	//enemySprite->SetPosition(1050.0f, 300.0f);	//outside right frame
-	//enemySprite->SetFrame(2);
-	//enemySprite->SetScale(0.5f);
-	//enemySprite->SetColor(1.0f, 0.5f, 0.0f);
-	//enemySprite->SetAngle(1.6f);
-	//------------------------------------------------------------------------
+	float x, y;
+	playerObject->GetPosition(x, y);
+	enemyObject1->CreateEnemySprite(15, 0, 25.0f, x, y);
 }
 
-//------------------------------------------------------------------------
-// Update your simulation here. deltaTime is the elapsed time since the last update in ms.
-// This will be called at no greater frequency than the value of APP_MAX_FRAME_RATE
-//------------------------------------------------------------------------
 void Update(float deltaTime)
 {
-	//enemySpawner->RandomSpawner();
-	playerObject->Update(deltaTime);
-	enemySpawner->Update(deltaTime);
-
-	//enemy movement
-	enemySpawner->EnemyMovement();
-
-	//------------------------------------------------------------------------
-	// Sample Sound.
-	//------------------------------------------------------------------------
-	if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
+	if (life > 0)
 	{
-		App::PlaySound(".\\TestData\\Test.wav");
+		playerObject->Update(deltaTime);
+		enemyObject1->Update(deltaTime);
+
+		//enemy movement
+		float x, y;
+		playerObject->GetPosition(x, y);
+		enemyObject1->EnemyMovement(x, y);
+
+		if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
+		{
+			App::PlaySound(".\\TestData\\Test.wav");
+		}
+	}
+}
+
+void Render()
+{
+	char textBuffer[64];
+	App::DrawLine(0.0f, 50.0f, (float)WINDOW_WIDTH, 50.0f);
+
+	if (life > 0)
+	{
+		playerObject->Render();
+		enemyObject1->Render();
 	}
 
-	//if (App::GetController().GetLeftThumbStickX() > 0.5f)
-	//{
-	//	playerSprite->SetAnimation(ANIM_RIGHT);
-	//	float x, y;
-	//	playerSprite->GetPosition(x, y);
-	//	x += 1.0f;
-	//	playerSprite->SetPosition(x, y);
-	//}
-	//if (App::GetController().GetLeftThumbStickX() < -0.5f)
-	//{
-	//	playerSprite->SetAnimation(ANIM_LEFT);
-	//	float x, y;
-	//	playerSprite->GetPosition(x, y);
-	//	x -= 1.0f;
-	//	playerSprite->SetPosition(x, y);
-	//}
+	if (life == 0)
+	{
+		playerObject->PlayerDestructor();
+		enemyObject1->EnemyDestructor();
 
-	//if (App::GetController().GetLeftThumbStickY() < -0.5f)
-	//{
-	//	playerSprite->SetAnimation(ANIM_BACKWARDS);
-	//	float x, y;
-	//	playerSprite->GetPosition(x, y);
-	//	y -= 1.0f;
-	//	playerSprite->SetPosition(x, y);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_UP, false))
-	//{
-	//	playerSprite->SetScale(playerSprite->GetScale() + 0.1f);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_DOWN, false))
-	//{
-	//	playerSprite->SetScale(playerSprite->GetScale() - 0.1f);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_LEFT, false))
-	//{
-	//	playerSprite->SetAngle(playerSprite->GetAngle() + 0.1f);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_DPAD_RIGHT, false))
-	//{
-	//	playerSprite->SetAngle(playerSprite->GetAngle() - 0.1f);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_A, true))
-	//{
-	//	playerSprite->SetAnimation(-1);
-	//}
-	//if (App::GetController().CheckButton(XINPUT_GAMEPAD_B, true))
-	//{
-	//	playerSprite->SetVertex(0, playerSprite->GetVertex(0) + 5.0f);
-	//}
+		sprintf(textBuffer, "High Score: %d", score);
+		App::Print((float)WINDOW_WIDTH / 2.3f, (float)WINDOW_HEIGHT / 2.0f, "GAME OVER");
+		App::Print((float)WINDOW_WIDTH / 2.3f, (float)WINDOW_HEIGHT / 3.0f, textBuffer);
+	}
+
+	sprintf(textBuffer, "Life: %d", life);
+	App::Print(200, 25, textBuffer);
+
+	sprintf(textBuffer, "Score: %d", score);
+	App::Print(500, 25, textBuffer);
 }
 
-//------------------------------------------------------------------------
-// Add your display calls here (DrawLine,Print, DrawSprite.) 
-// See App.h 
-//------------------------------------------------------------------------
-void Render()
-{	
-
-	//------------------------------------------------------------------------
-	// Example Line Drawing.
-	//------------------------------------------------------------------------
-	App::DrawLine(0.0f, 50.0f, (float) WINDOW_WIDTH, 50.0f);
-	//static float a = 0.0f;
-	//float r = 1.0f;
-	//float g = 1.0f;
-	//float b = 1.0f;
-	//a += 0.1f;
-	//for (int i = 0; i < 20; i++)
-	//{
-
-	//	float sx = 200 + sinf(a + i * 0.1f)*60.0f;
-	//	float sy = 200 + cosf(a + i * 0.1f)*60.0f;
-	//	float ex = 700 - sinf(a + i * 0.1f)*60.0f;
-	//	float ey = 700 - cosf(a + i * 0.1f)*60.0f;
-	//	g = (float)i / 20.0f;
-	//	b = (float)i / 20.0f;
-	//	App::DrawLine(sx, sy, ex, ey,r,g,b);
-	//}
-
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
-	
-	playerObject->Render();
-	enemySpawner->Render();
-	//------------------------------------------------------------------------
-
-	//------------------------------------------------------------------------
-	// Example Text.
-	//------------------------------------------------------------------------
-	App::Print(200, 25, "Score: ");
-
-}
-//------------------------------------------------------------------------
-// Add your shutdown code here. Called when the APP_QUIT_KEY is pressed.
-// Just before the app exits.
-//------------------------------------------------------------------------
 void Shutdown()
-{	
-	//------------------------------------------------------------------------
-	// Example Sprite Code....
+{
 	playerObject->PlayerDestructor();
-	enemySpawner->EnemyDestructor();
-	//------------------------------------------------------------------------
+	enemyObject1->EnemyDestructor();
 }

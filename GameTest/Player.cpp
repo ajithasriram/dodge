@@ -4,7 +4,6 @@
 #include "app/app.h"
 #include "app/main.h"
 
-
 float playerInitialPosX = (float)(WINDOW_WIDTH / 5.0f);
 float playerInitialPosY = (float)(WINDOW_HEIGHT / 2);
 
@@ -46,7 +45,7 @@ void Player::Update(float deltaTime)
 	
 	//Gravity
 	playerSprite->GetPosition(x, y);
-	if (y > (50.0f + (playerSprite->GetHeight() / 8.0f))) //((playerSprite->GetHeight()/2) + 50.0f));
+	if (y > (50.0f + (playerSprite->GetHeight() / 8.0f)))
 	{
 		y -= 3.0f;
 		playerSprite->SetPosition(x, y);
@@ -64,6 +63,11 @@ void Player::Update(float deltaTime)
 			playerSprite->SetPosition(playerPosX, playerPosY);
 		}
 	}
+}
+
+void Player::GetPosition(float &x, float &y)
+{
+	playerSprite->GetPosition(x, y);
 }
 
 void Player::Render()

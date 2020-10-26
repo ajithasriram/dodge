@@ -1,14 +1,4 @@
-﻿  stdafx.cpp
-  app.cpp
-  main.cpp
-  SimpleController.cpp
-  SimpleSound.cpp
-  SimpleSprite.cpp
-  TextureLoader.cpp
-  EnemySpawner.cpp
-  GameTest.cpp
-  Player.cpp
-  Generating Code...
-  GameTest.vcxproj -> D:\ubisoft\WDAU_API2020\x64\Debug\GameTest.exe
-  D:\ubisoft\WDAU_API2020\\GameTest\glut\bin\x64\freeglut.dll
+﻿  GameTest.cpp
+  GameTest.vcxproj -> D:\ubisoft\WDAU_API2020\dodge\x64\Debug\GameTest.exe
+  D:\ubisoft\WDAU_API2020\dodge\\GameTest\glut\bin\x64\freeglut.dll
   1 File(s) copied
